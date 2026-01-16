@@ -245,18 +245,22 @@
   <div class="wrap stack">
     <div class="card stack" id="lock">
       <h1> Enter by unlocking 3 steps ✨</h1>
-      <p> Let's see if you have become smart enough to solve the problems and see the surprise .</p>
+      <p> Let's see if you have become smart enough to solve the problems and see the surprise 😀 </p>
 
       <div class="steps">
-        <div class="step active" id="s1"><div><strong>Step 1</strong><small> Question </small></div><div class="dot"></div></div>
-        <div class="step" id="s2"><div><strong>Step 2</strong><small> Photo puzzle </small></div><div class="dot"></div></div>
-        <div class="step" id="s3"><div><strong>Step 3</strong><small> Mini game </small></div><div class="dot"></div></div>
+        <div class="step active" id="s1"><div><strong>Step 1: </strong><small> Question </small></div><div class="dot"></div></div>
+        <div class="step" id="s2"><div><strong>Step 2: </strong><small> Photo puzzle </small></div><div class="dot"></div></div>
+        <div class="step" id="s3"><div><strong>Step 3: </strong><small> Mini game </small></div><div class="dot"></div></div>
       </div>
 
       <!-- Step 1 -->
       <div class="card stack" id="step1">
         <h2> Step 1: Solve the riddle 💌</h2>
-        <p class="hint">
+        <p class="hint riddle"> 
+          .riddle {
+  color: #22c55e;
+  font-weight: 700;
+}
           Not a person, not a date,<br>
           But a place where our story began.<br>
           Where was it?
@@ -361,7 +365,7 @@ the bestest partner out there. From the bottom of my heart, I love you the most,
      * FLOATING STICKERS (TOP -> DOWN only)
      ***************/
     const floaters = document.getElementById("floaters");
-    const STICKERS = ["bat.png","batman.png","r_spider.png","spidey.png","superman.png"];
+    const STICKERS = ["bat.png","batman.png","rspider.png","spidey.png","superman.png"];
 
     function spawnSticker(){
       const img = document.createElement("img");
