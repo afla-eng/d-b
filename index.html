@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unlock the Surprise ✨</title>
+
+  <style>
+    :root{
+      /* SKY BLUE background */
+      --sky1:#bfe9ff;
+      --sky2:#78d6ff;
+      --sky3:#4aa9ff;
+
+      /* UI */
+      --card: rgba(4, 22, 56, 0.92);
+      --cardBorder: rgba(56,189,248,.35);
+      --text: #eaf6ff;
+      --muted: rgba(234,246,255,.78);
+
+      --accent:#2563eb;
+      --accent2:#38bdf8;
+
+      --ok:#22c55e;
+      --bad:#ef4444;
+
+      --shadow: 0 20px 60px rgba(0,0,0,.25);
+      --radius: 20px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(900px 600px at 20% 15%, rgba(255,255,255,.65), transparent 60%),
+        radial-gradient(900px 600px at 85% 25%, rgba(255,255,255,.55), transparent 62%),
+        linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 55%, var(--sky3) 100%);
+      overflow-x:hidden;
+    }
+
+    /* FLOATERS LAYER */
+    .floaters{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    @keyframes floatDown{
+      from { transform: translateY(-120vh) rotate(-10deg); opacity:0; }
+      10% { opacity:.9; }
+      to   { transform: translateY(120vh) rotate(10deg);  opacity:0; }
+    }
+
+    .floaterSticker{
+      position:absolute;
+      width:60px;
+      height:60px;
+      object-fit:contain;
+      pointer-events:none;
+      z-index:1;
+      animation: floatDown linear infinite;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+      opacity:.85;
+    }
+
+    /* CONTENT LAYER */
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px;
+      position: relative;
+      z-index: 5; /* above floaters */
+    }
+
+    .stack{display:grid; gap:14px}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--cardBorder);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:18px;
+      color: var(--text);
+    }
+
+    h1,h2,h3{margin:0; color:#fff}
+    p{margin:0; color:var(--muted); line-height:1.6}
+    small{color:var(--muted)}
+    .hint{font-size:13px; color: var(--muted)}
+
+    .btn{
+      border:none;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:800;
+      cursor:pointer;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color:white;
+      box-shadow: 0 12px 30px rgba(37,99,235,.25);
+      transform: translateY(0);
+      transition:.2s ease;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn.secondary{
+      background: rgba(255,255,255,.14);
+      color: var(--text);
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow:none;
+    }
+
+    .input{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.20);
+      background: rgba(15,23,42,.70);
+      color: #eaf6ff;
+      font-size:16px;
+      outline:none;
+    }
+    .input::placeholder{color: rgba(234,246,255,.55);}
+
+    .msg{font-weight:800}
+    .msg.ok{color:var(--ok)}
+    .msg.bad{color:var(--bad)}
+
+    /* Stepper */
+    .steps{display:flex; gap:10px; flex-wrap:wrap}
+    .step{
+      flex:1; min-width:180px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(4,22,56,.65);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .dot{
+      width:12px; height:12px; border-radius:50%;
+      background: rgba(234,246,255,.25);
+    }
+    .step.active{border-color: rgba(56,189,248,.55); box-shadow: 0 10px 24px rgba(56,189,248,.12)}
+    .step.done .dot{background: var(--ok)}
+
+    /* Puzzle grid */
+    .puzzle{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:8px;
+      max-width:420px;
+      margin:0 auto;
+      user-select:none;
+      touch-action: manipulation;
+    }
+    .tile{
+      aspect-ratio: 1/1;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.18);
+      background-size: 300% 300%;
+      background-repeat:no-repeat;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      cursor:pointer;
+      transition: transform .12s ease, outline .12s ease;
+    }
+    .tile:active{transform: scale(.98)}
+    .tile.selected{outline:3px solid rgba(56,189,248,.55)}
+
+    /* Memory game */
+    .memory{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      max-width:520px;
+      margin:0 auto;
+    }
+    .mcard{
+      aspect-ratio: 1/1;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(4,22,56,.65);
+      display:flex; align-items:center; justify-content:center;
+      font-size:28px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      cursor:pointer;
+      transition: transform .12s ease;
+    }
+    .mcard:active{transform: scale(.98)}
+    .mcard.revealed{background: rgba(56,189,248,.16); border-color: rgba(56,189,248,.35)}
+    .mcard.matched{background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.35)}
+
+    /* Reveal */
+    #surprise{display:none}
+    .hero{
+      text-align:center;
+      padding:22px;
+    }
+    .photoBig{
+      width:100%;
+      max-height:420px;
+      object-fit:cover;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow: var(--shadow);
+    }
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+    }
+    .gallery img{
+      width:100%;
+      aspect-ratio: 1/1;
+      object-fit:cover;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+    }
+    blockquote{
+      margin:0;
+      padding:16px;
+      border-left: 5px solid rgba(56,189,248,.55);
+      background: rgba(4,22,56,.65);
+      border-radius: 14px;
+      color: var(--text);
+      font-weight:700;
+    }
+
+    @media (max-width:520px){
+      .memory{grid-template-columns: repeat(3, 1fr)}
+      h1{font-size:26px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="floaters" id="floaters"></div>
+
+  <div class="wrap stack">
+    <div class="card stack" id="lock">
+      <h1>Enter by unlocking 3 steps ✨</h1>
+      <p>First it looks like nothing… but if you know the answers, the surprise opens.</p>
+
+      <div class="steps">
+        <div class="step active" id="s1"><div><strong>Step 1</strong><small>Question</small></div><div class="dot"></div></div>
+        <div class="step" id="s2"><div><strong>Step 2</strong><small>Photo puzzle</small></div><div class="dot"></div></div>
+        <div class="step" id="s3"><div><strong>Step 3</strong><small>Mini game</small></div><div class="dot"></div></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="card stack" id="step1">
+        <h2>Step 1: Solve the riddle 💌</h2>
+        <p class="hint">
+          Not a person, not a date,<br>
+          But a place where our story began.<br>
+          Where was it?
+        </p>
+        <input class="input" id="answer" placeholder="Type the answer..." />
+        <div class="row" style="justify-content:space-between">
+          <span id="msg1" class="msg"></span>
+          <button class="btn" id="btn1">Check</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="card stack" id="step2" style="display:none">
+        <h2>Step 2: Fix the photo puzzle 🧩</h2>
+        <p class="hint">Tap two tiles to swap until the image looks correct.</p>
+        <div class="puzzle" id="puzzle"></div>
+        <div class="row" style="justify-content:space-between">
+          <span id="msg2" class="msg"></span>
+          <button class="btn secondary" id="shuffle">Shuffle</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="card stack" id="step3" style="display:none">
+        <h2>Step 3: Match the pairs 🎴</h2>
+        <p class="hint">Match all pairs to unlock the surprise.</p>
+        <div class="memory" id="memory"></div>
+        <div class="row" style="justify-content:space-between">
+          <span id="msg3" class="msg"></span>
+          <button class="btn secondary" id="resetMem">Reset</button>
+        </div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn" id="open" style="display:none">Open the Surprise 💙</button>
+      </div>
+    </div>
+
+    <!-- Surprise -->
+    <div id="surprise" class="stack">
+      <div class="card hero stack">
+        <h1>Happy Birthday, <span id="personName">Sakib</span> 🥹💙</h1>
+        <p id="subtitle">Today is yours. I’m just lucky to be part of it.</p>
+      </div>
+
+      <img class="photoBig" id="mainPhoto" alt="Main photo"/>
+
+      <div class="card stack">
+        <h2>Our little story</h2>
+        <p id="longText"></p>
+      </div>
+
+      <div class="card stack">
+        <h2>Photos</h2>
+        <div class="gallery">
+          <img id="g1" alt="photo 1"/>
+          <img id="g2" alt="photo 2"/>
+          <img id="g3" alt="photo 3"/>
+          <img id="g4" alt="photo 4"/>
+        </div>
+      </div>
+
+      <div class="card stack">
+        <h2>Quotes</h2>
+        <blockquote id="q1"></blockquote>
+        <blockquote id="q2"></blockquote>
+        <blockquote id="q3"></blockquote>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***************
+     * CONFIG (edit these)
+     ***************/
+    const CONFIG = {
+      answer: "segafredo",   // step 1 answer (case-insensitive)
+      puzzleImage: "photo.jpg",
+
+      personName: "Sakib",
+      subtitle: "Today is yours. I’m just lucky to be part of it.",
+      longText: `Happiest Birthday, my love! 💙
+I really hope you get to be the happiest.
+Whatever happens, do know I’m always proud of you, and I’m always cheering for you.`,
+
+      mainPhoto: "photo.jpg",
+      gallery: ["photo.jpg","photo.jpg","photo.jpg","photo.jpg"],
+      quotes: [
+        "“You make ordinary days feel like magic.”",
+        "“If love had a face, it would look like your smile.”",
+        "“I’m proud of you — always.”"
+      ],
+
+      memoryIcons: ["🕷️","🦇","💙","⚡","🕸️","⭐"]
+    };
+
+    /***************
+     * FLOATING STICKERS (TOP -> DOWN only)
+     ***************/
+    const floaters = document.getElementById("floaters");
+    const STICKERS = ["bat.png","batman.png","r_spider.png","spidey.png","superman.png"];
+
+    function spawnSticker(){
+      const img = document.createElement("img");
+      img.src = STICKERS[Math.floor(Math.random()*STICKERS.length)];
+      img.className = "floaterSticker";
+
+      img.style.left = (Math.random()*100) + "vw";
+      img.style.top  = (-20 - Math.random()*30) + "vh";
+      img.style.width  = (42 + Math.random()*44) + "px";
+      img.style.height = img.style.width;
+
+      img.style.animationDuration = (8 + Math.random()*10) + "s";
+      img.style.animationDelay = (Math.random()*2) + "s";
+
+      floaters.appendChild(img);
+      setTimeout(()=>img.remove(), 22000);
+    }
+
+    for(let i=0;i<10;i++) spawnSticker();
+    setInterval(spawnSticker, 800);
+
+    /***************
+     * Steps state helpers
+     ***************/
+    const s1 = document.getElementById("s1");
+    const s2 = document.getElementById("s2");
+    const s3 = document.getElementById("s3");
+
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const step3 = document.getElementById("step3");
+
+    const msg1 = document.getElementById("msg1");
+    const msg2 = document.getElementById("msg2");
+    const msg3 = document.getElementById("msg3");
+
+    const openBtn = document.getElementById("open");
+    const surprise = document.getElementById("surprise");
+    const lock = document.getElementById("lock");
+
+    function setActive(el){
+      [s1,s2,s3].forEach(x=>x.classList.remove("active"));
+      el.classList.add("active");
+    }
+    function markDone(el){
+      el.classList.add("done");
+      el.classList.remove("active");
+    }
+
+    /***************
+     * Step 1
+     ***************/
+    document.getElementById("btn1").addEventListener("click", ()=>{
+      const val = (document.getElementById("answer").value||"").trim().toLowerCase();
+      if(!val){
+        msg1.textContent = "Type something 🙂";
+        msg1.className = "msg bad";
+        return;
+      }
+      if(val === CONFIG.answer.toLowerCase()){
+        msg1.textContent = "Correct ✅";
+        msg1.className = "msg ok";
+        markDone(s1);
+        step1.style.display = "none";
+        step2.style.display = "block";
+        setActive(s2);
+      }else{
+        msg1.textContent = "Nope, try again 😼";
+        msg1.className = "msg bad";
+      }
+    });
+
+    /***************
+     * Step 2: photo puzzle (3x3 swap)
+     ***************/
+    const puzzleEl = document.getElementById("puzzle");
+    const size = 3;
+    let order = [...Array(size*size).keys()];
+    let selected = null;
+
+    function renderPuzzle(){
+      puzzleEl.innerHTML = "";
+      order.forEach((idx, pos)=>{
+        const tile = document.createElement("div");
+        tile.className = "tile";
+
+        const row = Math.floor(idx/size);
+        const col = idx%size;
+
+        tile.style.backgroundImage = `url('${CONFIG.puzzleImage}')`;
+        tile.style.backgroundPosition = `${(col/(size-1))*100}% ${(row/(size-1))*100}%`;
+        tile.style.backgroundSize = `${size*100}% ${size*100}%`;
+
+        tile.addEventListener("click", ()=>{
+          if(selected === null){
+            selected = pos;
+            tile.classList.add("selected");
+          }else{
+            const tmp = order[selected];
+            order[selected] = order[pos];
+            order[pos] = tmp;
+            selected = null;
+            renderPuzzle();
+            checkPuzzle();
+          }
+        });
+
+        puzzleEl.appendChild(tile);
+      });
+    }
+
+    function isSolved(){ return order.every((v,i)=>v===i); }
+
+    function shufflePuzzle(){
+      order = [...Array(size*size).keys()].sort(()=>Math.random()-0.5);
+      if(isSolved()) shufflePuzzle();
+      selected = null;
+      msg2.textContent = "";
+      msg2.className = "msg";
+      renderPuzzle();
+    }
+
+    function checkPuzzle(){
+      if(isSolved()){
+        msg2.textContent = "Puzzle solved! ✅";
+        msg2.className = "msg ok";
+        markDone(s2);
+
+        step2.style.display = "none";
+        step3.style.display = "block";
+        setActive(s3);
+        initMemory();
+      }
+    }
+
+    document.getElementById("shuffle").addEventListener("click", shufflePuzzle);
+    shufflePuzzle();
+
+    /***************
+     * Step 3: memory match
+     ***************/
+    const memoryEl = document.getElementById("memory");
+    let memDeck = [];
+    let firstPick = null;
+    let lockPick = false;
+    let matchedCount = 0;
+
+    function initMemory(){
+      const icons = CONFIG.memoryIcons.slice(0,6);
+      memDeck = [...icons, ...icons].sort(()=>Math.random()-0.5);
+      matchedCount = 0;
+      firstPick = null;
+      lockPick = false;
+      msg3.textContent = "";
+      msg3.className = "msg";
+      renderMemory();
+    }
+
+    function renderMemory(){
+      memoryEl.innerHTML = "";
+      memDeck.forEach((icon, i)=>{
+        const c = document.createElement("div");
+        c.className = "mcard";
+        c.dataset.index = i;
+        c.dataset.icon = icon;
+        c.textContent = "❔";
+
+        c.addEventListener("click", ()=>{
+          if(lockPick) return;
+          if(c.classList.contains("matched")) return;
+          if(c.classList.contains("revealed")) return;
+
+          c.classList.add("revealed");
+          c.textContent = icon;
+
+          if(firstPick === null){
+            firstPick = c;
+          }else{
+            const secondPick = c;
+            if(firstPick.dataset.icon === secondPick.dataset.icon){
+              firstPick.classList.add("matched");
+              secondPick.classList.add("matched");
+              firstPick.classList.remove("revealed");
+              secondPick.classList.remove("revealed");
+              matchedCount += 2;
+              firstPick = null;
+
+              if(matchedCount === memDeck.length){
+                msg3.textContent = "All matched! 🎉";
+                msg3.className = "msg ok";
+                markDone(s3);
+                openBtn.style.display = "inline-block";
+              }
+            }else{
+              lockPick = true;
+              setTimeout(()=>{
+                firstPick.classList.remove("revealed");
+                secondPick.classList.remove("revealed");
+                firstPick.textContent = "❔";
+                secondPick.textContent = "❔";
+                firstPick = null;
+                lockPick = false;
+              }, 650);
+            }
+          }
+        });
+
+        memoryEl.appendChild(c);
+      });
+    }
+
+    document.getElementById("resetMem").addEventListener("click", initMemory);
+
+    /***************
+     * Reveal
+     ***************/
+    function fillSurprise(){
+      document.getElementById("personName").textContent = CONFIG.personName;
+      document.getElementById("subtitle").textContent = CONFIG.subtitle;
+      document.getElementById("longText").textContent = CONFIG.longText;
+
+      document.getElementById("mainPhoto").src = CONFIG.mainPhoto;
+
+      const [g1,g2,g3,g4] = CONFIG.gallery;
+      document.getElementById("g1").src = g1;
+      document.getElementById("g2").src = g2;
+      document.getElementById("g3").src = g3;
+      document.getElementById("g4").src = g4;
+
+      document.getElementById("q1").textContent = CONFIG.quotes[0] || "";
+      document.getElementById("q2").textContent = CONFIG.quotes[1] || "";
+      document.getElementById("q3").textContent = CONFIG.quotes[2] || "";
+    }
+
+    openBtn.addEventListener("click", ()=>{
+      fillSurprise();
+      lock.style.display = "none";
+      surprise.style.display = "grid";
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+  </script>
+</body>
+</html>
