@@ -48,32 +48,37 @@
       overflow-x:hidden;
     }
 
-    /* FLOATERS LAYER */
-    .floaters{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      overflow:hidden;
-      z-index:0;
-    }
+    /* ===== FLOATING STICKERS (TOP -> DOWN) ===== */
+.floaters{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;               /* stickers layer */
+}
 
-    @keyframes floatDown{
-      from { transform: translateY(-120vh) rotate(-10deg); opacity:0; }
-      10% { opacity:.9; }
-      to   { transform: translateY(120vh) rotate(10deg);  opacity:0; }
-    }
+/* keep your UI above stickers */
+.wrap, .card{
+  position: relative;
+  z-index: 5;
+}
 
-    .floaterSticker{
-      position:absolute;
-      width:60px;
-      height:60px;
-      object-fit:contain;
-      pointer-events:none;
-      z-index:1;
-      animation: floatDown linear infinite;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
-      opacity:.85;
-    }
+.floaterSticker{
+  position: absolute;
+  object-fit: contain;
+  pointer-events: none;
+  animation-name: floatDown;               /* IMPORTANT */
+  animation-timing-function: linear;       /* IMPORTANT */
+  animation-iteration-count: infinite;     /* IMPORTANT */
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+}
+
+@keyframes floatDown{
+  0%   { transform: translateY(-140px) rotate(-10deg) scale(0.95); opacity:0; }
+  10%  { opacity:1; }
+  100% { transform: translateY(calc(100vh + 180px)) rotate(12deg) scale(1.05); opacity:0; }
+}
+
 
     /* CONTENT LAYER */
     .wrap{
@@ -251,7 +256,7 @@
   <div class="wrap stack">
     <div class="card stack" id="lock">
       <h1> Enter by unlocking 3 steps ✨</h1>
-      <p> Let's see if you have become smart enough to solve the problems and see the surprise 😀 </p>
+      <p> Let's see if you have become smart enough to solve the problems and see the surprise! 😀 </p>
 
       <div class="steps">
         <div class="step active" id="s1"><div><strong>Step 1: </strong><small> Question </small></div><div class="dot"></div></div>
@@ -341,18 +346,22 @@
     const CONFIG = {
       answer: "segafredo",   // step 1 answer (case-insensitive)
       puzzleImage: "photo.jpg",
+      
 
       personName: "Towhidul Islam Sakib",
       subtitle: "24th it is!",
-      longText: I really hope you get to be the happiest,
-      and I hope your frontal lobe is fully devloped now,
-      as the time is nearly finished :)
-    Thank you for being the most kindest and perfect man anyone could ever ask for. 
-Whatever happens, do know I’m always proud of you, and I’m always cheering for you. 
-      You are indeed the best son, best friend, best brother and 
-the bestest partner out there. From the bottom of my heart, I love you the most, Towhidul Islam!`,
+      longText: longText: `I really hope you get to be the happiest,
+and I hope your frontal lobe is fully developed now,
+as the time is nearly finished :)
 
-      mainPhoto: "photo.jpg",
+Thank you for being the most kindest and perfect man anyone could ever ask for.
+Whatever happens, do know I’m always proud of you.
+
+You are indeed the best son, best friend, best brother,
+and the bestest partner out there.
+From the bottom of my heart, I love you.`,
+
+      mainPhoto: 
       gallery: ["photo.jpg","photo.jpg","photo.jpg","photo.jpg"],
       quotes: [
         "“You make ordinary days feel like magic.”",
@@ -363,34 +372,53 @@ the bestest partner out there. From the bottom of my heart, I love you the most,
       memoryIcons: ["🕷️","🦇","💙","⚡","🕸️","⭐"]
     };
 
-    /***************
-     * FLOATING STICKERS (TOP -> DOWN only)
-     ***************/
-    const floaters = document.getElementById("floaters");
-    const STICKERS = ["bat.png","batman.png","rspider.png","spidey.png","superman.png"];
+   /* ===== FLOATING STICKERS JS (TOP -> DOWN, NO DELAY) ===== */
+const floaters = document.getElementById("floaters");
 
-    function spawnSticker(){
-      const img = document.createElement("img");
-      img.src = STICKERS[Math.floor(Math.random()*STICKERS.length)];
-      img.className = "floaterSticker";
+/* IMPORTANT: these names MUST match your uploaded files EXACTLY */
+const STICKERS = [
+  "bat.png",
+  "batman.png",
+  "spidey.png",
+  "superman.png",
+  "r spider.png"   // if your file has a space
+  // if your file is r_spider.png instead, replace this line with "r_spider.png"
+];
 
-      img.style.left = (Math.random()*100) + "vw";
-      img.style.top  = (-20 - Math.random()*30) + "vh";
-      img.style.width  = (42 + Math.random()*44) + "px";
-      img.style.height = img.style.width;
+function spawnSticker(){
+  const img = document.createElement("img");
 
-     img.style.animationDuration = (8 + Math.random()*10) + "s";
-img.style.animationDelay = "0s"; // start immediately
+  img.src = STICKERS[Math.floor(Math.random() * STICKERS.length)];
+  img.className = "floaterSticker";
 
-floaters.appendChild(img);
-      setTimeout(()=>img.remove(), 22000);
-    }
+  // random size
+  const size = 40 + Math.random() * 60;
+  img.style.width = size + "px";
+  img.style.height = size + "px";
 
-   // instant burst so you see them immediately
-for(let i=0;i<20;i++) spawnSticker();
+  // random left position across the screen
+  img.style.left = (Math.random() * 100) + "vw";
 
-// keep spawning regularly
-setInterval(spawnSticker, 500);
+  // NO delay — start instantly
+  img.style.animationDelay = "0s";
+
+  // random speed
+  img.style.animationDuration = (5 + Math.random() * 6) + "s";
+
+  floaters.appendChild(img);
+
+  // remove after some time (clean)
+  setTimeout(() => img.remove(), 14000);
+}
+
+/* spawn a bunch immediately so you SEE it instantly */
+for(let i=0; i<25; i++){
+  spawnSticker();
+}
+
+/* keep spawning every 300ms */
+setInterval(spawnSticker, 300);
+
 
     /***************
      * Steps state helpers
