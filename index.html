@@ -244,18 +244,18 @@
 
   <div class="wrap stack">
     <div class="card stack" id="lock">
-      <h1>Enter by unlocking 3 steps ✨</h1>
-      <p>First it looks like nothing… but if you know the answers, the surprise opens.</p>
+      <h1> Enter by unlocking 3 steps ✨</h1>
+      <p> Let's see if you have become smart enough to solve the problems and see the surprise .</p>
 
       <div class="steps">
-        <div class="step active" id="s1"><div><strong>Step 1</strong><small>Question</small></div><div class="dot"></div></div>
-        <div class="step" id="s2"><div><strong>Step 2</strong><small>Photo puzzle</small></div><div class="dot"></div></div>
-        <div class="step" id="s3"><div><strong>Step 3</strong><small>Mini game</small></div><div class="dot"></div></div>
+        <div class="step active" id="s1"><div><strong>Step 1</strong><small> Question </small></div><div class="dot"></div></div>
+        <div class="step" id="s2"><div><strong>Step 2</strong><small> Photo puzzle </small></div><div class="dot"></div></div>
+        <div class="step" id="s3"><div><strong>Step 3</strong><small> Mini game </small></div><div class="dot"></div></div>
       </div>
 
       <!-- Step 1 -->
       <div class="card stack" id="step1">
-        <h2>Step 1: Solve the riddle 💌</h2>
+        <h2> Step 1: Solve the riddle 💌</h2>
         <p class="hint">
           Not a person, not a date,<br>
           But a place where our story began.<br>
@@ -271,7 +271,7 @@
       <!-- Step 2 -->
       <div class="card stack" id="step2" style="display:none">
         <h2>Step 2: Fix the photo puzzle 🧩</h2>
-        <p class="hint">Tap two tiles to swap until the image looks correct.</p>
+        <p class="hint"> Tap two tiles to swap until the image looks correct.</p>
         <div class="puzzle" id="puzzle"></div>
         <div class="row" style="justify-content:space-between">
           <span id="msg2" class="msg"></span>
@@ -336,11 +336,15 @@
       answer: "segafredo",   // step 1 answer (case-insensitive)
       puzzleImage: "photo.jpg",
 
-      personName: "Sakib",
-      subtitle: "Today is yours. I’m just lucky to be part of it.",
-      longText: `Happiest Birthday, my love! 💙
-I really hope you get to be the happiest.
-Whatever happens, do know I’m always proud of you, and I’m always cheering for you.`,
+      personName: "Towhidul Islam Sakib",
+      subtitle: "24th it is!",
+      longText: I really hope you get to be the happiest,
+      and I hope your frontal lobe is fully devloped now,
+      as the time is nearly finished :)
+    Thank you for being the most kindest and perfect man anyone could ever ask for. 
+Whatever happens, do know I’m always proud of you, and I’m always cheering for you. 
+      You are indeed the best son, best friend, best brother and 
+the bestest partner out there. From the bottom of my heart, I love you the most, Towhidul Islam!`,
 
       mainPhoto: "photo.jpg",
       gallery: ["photo.jpg","photo.jpg","photo.jpg","photo.jpg"],
@@ -369,15 +373,18 @@ Whatever happens, do know I’m always proud of you, and I’m always cheering f
       img.style.width  = (42 + Math.random()*44) + "px";
       img.style.height = img.style.width;
 
-      img.style.animationDuration = (8 + Math.random()*10) + "s";
-      img.style.animationDelay = (Math.random()*2) + "s";
+     img.style.animationDuration = (8 + Math.random()*10) + "s";
+img.style.animationDelay = "0s"; // start immediately
 
-      floaters.appendChild(img);
+floaters.appendChild(img);
       setTimeout(()=>img.remove(), 22000);
     }
 
-    for(let i=0;i<10;i++) spawnSticker();
-    setInterval(spawnSticker, 800);
+   // instant burst so you see them immediately
+for(let i=0;i<20;i++) spawnSticker();
+
+// keep spawning regularly
+setInterval(spawnSticker, 500);
 
     /***************
      * Steps state helpers
